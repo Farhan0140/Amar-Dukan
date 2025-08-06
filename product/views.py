@@ -7,3 +7,6 @@ from rest_framework.response import Response
 def products( request ):
     return Response({"messages": "Rest Api"})
 
+@api_view()
+def categories( request ):
+    return Response({"Messages": "Categories API"})
