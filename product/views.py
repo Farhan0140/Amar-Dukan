@@ -3,17 +3,27 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from product.models import Product
-from product.serializer import Product_Serializers
+from product.models import Product, Category
+from product.serializer import Product_Serializer, Category_Serializer
+
+from django.db.models import Count
 
 
-@api_view()
-def products( request ):
-    return Response({"messages": "Rest Api"})
-
-@api_view()
-def categories( request ):
-    return Response({"Messages": "Categories API"})
+@api_view(['GET', 'POST'])
+def view_products( request ):
+    if request.method == 'GET':
+        products = Product.objects.select_related('category').all()
+        serializer = Product_Serializer( products, many=True, context={'request': request} )
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = Product_Serializer(data=request.data, context={'request': request})  # Deserializer
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # @api_view()
@@ -39,8 +49,8 @@ def categories( request ):
 # ---------> Simple Version
 
 @api_view()
-def view_specific_product( request, id ):
-    product = get_object_or_404( Product, pk = id )
+def view_specific_product( request, pk ):
+    product = get_object_or_404( Product, pk = pk )
     # product_dict = {
     #     'id': product.id,
     #     'name': product.name,
@@ -49,6 +59,31 @@ def view_specific_product( request, id ):
     #     'description': product.description,
     # }
 
-    serializer = Product_Serializers(product)
+    serializer = Product_Serializer( product, context={'request': request} )
+
+    return Response( serializer.data )
+
+
+@api_view(['GET', 'POST'])
+def view_categories( request ):
+    if request.method == 'GET':
+        categories = Category.objects.annotate(product_count=Count('products'))
+        serializer = Category_Serializer( categories, many=True )
+
+        return Response( serializer.data )
+    
+    if request.method == 'POST':
+        serializer = Category_Serializer(data=request.data)     # Deserializer
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view()
+def view_specific_category( request, pk ):
+    category = get_object_or_404( Category, pk = pk )
+    serializer = Category_Serializer( category )
 
     return Response( serializer.data )

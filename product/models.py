@@ -24,5 +24,8 @@ class Product( models.Model ):
         related_name='products'
     )
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__( self ):
         return self.name
