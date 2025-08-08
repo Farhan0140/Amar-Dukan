@@ -9,11 +9,21 @@ from product.serializer import Product_Serializer, Category_Serializer
 from django.db.models import Count
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def view_products( request ):
-    products = Product.objects.select_related('category').all()
-    serializer = Product_Serializer( products, many=True, context={'request': request} )
-    return Response(serializer.data)
+    if request.method == 'GET':
+        products = Product.objects.select_related('category').all()
+        serializer = Product_Serializer( products, many=True, context={'request': request} )
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = Product_Serializer(data=request.data, context={'request': request})  # Deserializer
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # @api_view()
@@ -54,12 +64,21 @@ def view_specific_product( request, pk ):
     return Response( serializer.data )
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def view_categories( request ):
-    categories = Category.objects.annotate(product_count=Count('products'))
-    serializer = Category_Serializer( categories, many=True )
+    if request.method == 'GET':
+        categories = Category.objects.annotate(product_count=Count('products'))
+        serializer = Category_Serializer( categories, many=True )
 
-    return Response( serializer.data )
+        return Response( serializer.data )
+    
+    if request.method == 'POST':
+        serializer = Category_Serializer(data=request.data)     # Deserializer
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view()
