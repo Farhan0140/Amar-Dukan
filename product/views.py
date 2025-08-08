@@ -18,12 +18,11 @@ def view_products( request ):
     
     if request.method == 'POST':
         serializer = Product_Serializer(data=request.data, context={'request': request})  # Deserializer
-        if serializer.is_valid():
-            print(serializer.validated_data)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # @api_view()
