@@ -4,13 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from product.models import Product, Category
-from product.serializer import Product_Serializers, Category_Serializer
+from product.serializer import Product_Serializer, Category_Serializer
+
+from django.db.models import Count
 
 
 @api_view()
 def view_products( request ):
     products = Product.objects.select_related('category').all()
-    serializer = Product_Serializers( products, many=True, context={'request': request} )
+    serializer = Product_Serializer( products, many=True, context={'request': request} )
     return Response(serializer.data)
 
 
@@ -47,14 +49,14 @@ def view_specific_product( request, pk ):
     #     'description': product.description,
     # }
 
-    serializer = Product_Serializers( product, context={'request': request} )
+    serializer = Product_Serializer( product, context={'request': request} )
 
     return Response( serializer.data )
 
 
 @api_view()
 def view_categories( request ):
-    categories = Category.objects.all()
+    categories = Category.objects.annotate(product_count=Count('products'))
     serializer = Category_Serializer( categories, many=True )
 
     return Response( serializer.data )
