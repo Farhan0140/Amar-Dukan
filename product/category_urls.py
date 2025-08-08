@@ -3,5 +3,6 @@ from product import views
 
 
 urlpatterns = [
-    path('', views.categories, name="category-list"),
+    path('', views.view_categories, name="category_list"),
+    path('<int:pk>/', views.view_specific_category, name='view_specific_category')
 ]
