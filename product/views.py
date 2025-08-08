@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from product.models import Product
+from product.serializer import Product_Serializers
 
 
 @api_view()
@@ -40,12 +41,14 @@ def categories( request ):
 @api_view()
 def view_specific_product( request, id ):
     product = get_object_or_404( Product, pk = id )
-    product_dict = {
-        'id': product.id,
-        'name': product.name,
-        'price': product.price,
-        'stock': product.stock,
-        'description': product.description,
-    }
+    # product_dict = {
+    #     'id': product.id,
+    #     'name': product.name,
+    #     'price': product.price,
+    #     'stock': product.stock,
+    #     'description': product.description,
+    # }
 
-    return Response( product_dict )
+    serializer = Product_Serializers(product)
+
+    return Response( serializer.data )
