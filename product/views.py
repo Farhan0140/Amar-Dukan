@@ -62,13 +62,19 @@ class View_Categories( APIView ):
 
 class View_Specific_Category( APIView ):
     def get(self, request, pk):
-        category = get_object_or_404( Category, pk = pk )
+        category = get_object_or_404(
+            Category.objects.annotate(product_count=Count('products')), 
+            pk = pk 
+        )
         serializer = Category_Serializer( category )
 
         return Response( serializer.data )
     
     def put(self, request, pk):
-        category = get_object_or_404( Category, pk = pk )
+        category = get_object_or_404(
+            Category.objects.annotate(product_count=Count('products')), 
+            pk = pk 
+        )
         serializer = Category_Serializer(category, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
