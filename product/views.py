@@ -9,8 +9,16 @@ from django.db.models import Count
 
 
 class Product_View_Set( ModelViewSet ):
-    queryset = Product.objects.all()
     serializer_class = Product_Serializer
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        category_id = self.request.query_params.get('category_id')
+
+        if category_id is not None:
+            queryset = Product.objects.filter(category_id=category_id)
+        
+        return queryset
 
     def destroy(self, request, *args, **kwargs):
         product = self.get_object()
@@ -27,7 +35,6 @@ class Category_View_Set( ModelViewSet ):
 
 
 class Review_View_Set( ModelViewSet ):
-    queryset = Review.objects.all()
     serializer_class = Review_Serializer
 
     def get_queryset(self):
