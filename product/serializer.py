@@ -36,6 +36,19 @@ class Product_Serializer( serializers.ModelSerializer ):
 
     def calculate_tax(self, product):
         return round(product.price * Decimal(1.1), 2)
+    
+    # Field Level Validation
+    def validate_price(self, price):
+        if price < 0:
+            return serializers.ValidationError('Price can\'t be negative')
+        
+        return price
+    
+
+    # Object Level Validation
+    # def validate(self, attrs):
+    #     if attrs['password1'] != ['password2']:
+    #         raise serializers.ValidationError('Password Didn\'t Match')
 
 
 # class Category_Serializer( serializers.Serializer ):
