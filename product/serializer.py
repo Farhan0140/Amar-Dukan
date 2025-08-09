@@ -8,10 +8,10 @@ class Category_Serializer( serializers.ModelSerializer ):
         model = Category
         fields = ['id', 'name', 'description', 'product_count']
 
-    product_count = serializers.SerializerMethodField(method_name='get_product_count')
-
-    def get_product_count(self, obj):
-        return obj.products.count()                                                # We need to solve this from views.py 
+    product_count = serializers.IntegerField(
+        read_only=True, 
+        help_text="Return the number product in this category"
+    )
 
 
 class Product_Serializer( serializers.ModelSerializer ):
@@ -20,11 +20,6 @@ class Product_Serializer( serializers.ModelSerializer ):
         fields = ['id', 'name', 'description', 'stock', 'price', 'product_with_tax', 'category']
 
     product_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
-
-    category = serializers.HyperlinkedRelatedField(
-        queryset = Category.objects.all(),              # It return link of category details
-        view_name = 'view_specific_category'    # url name in urls.py
-    )
 
     def calculate_tax(self, product):
         return round(product.price * Decimal(1.1), 2)
