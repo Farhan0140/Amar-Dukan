@@ -11,15 +11,7 @@ class Category_Serializer( serializers.ModelSerializer ):
     product_count = serializers.SerializerMethodField(method_name='get_product_count')
 
     def get_product_count(self, obj):
-        return obj.products.count()
-
-
-    # 
-    # product_count = serializers.SerializerMethodField(method_name='get_product_count')
-
-    # def get_product_count(self, category):
-    #     count = Product.objects.filter(category=category).count()     # This method is too time-consuming 
-    #     return count                                                  # We need to solve this from views.py 
+        return obj.products.count()                                                # We need to solve this from views.py 
 
 
 class Product_Serializer( serializers.ModelSerializer ):
@@ -43,42 +35,3 @@ class Product_Serializer( serializers.ModelSerializer ):
             return serializers.ValidationError('Price can\'t be negative')
         
         return price
-    
-
-    # Object Level Validation
-    # def validate(self, attrs):
-    #     if attrs['password1'] != ['password2']:
-    #         raise serializers.ValidationError('Password Didn\'t Match')
-
-
-# class Category_Serializer( serializers.Serializer ):
-#     id = serializers.IntegerField()
-#     name = serializers.CharField()
-#     description = serializers.CharField()
-
-
-# class Product_Serializer( serializers.Serializer ):
-#     id = serializers.IntegerField()
-#     name = serializers.CharField()
-#     stock = serializers.IntegerField()
-#     description = serializers.CharField()
-#     # price = serializers.DecimalField(max_digits=10, decimal_places=2)
-#     unit_price = serializers.DecimalField(max_digits=10, decimal_places=2, source='price')
-#     price_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
-
-#     # category = serializers.PrimaryKeyRelatedField(
-#     #     queryset = Category.objects.all()           # It return only id
-#     # )
-
-#     # category = serializers.StringRelatedField()     # It return Dunder method of Category model
-
-#     # category = Category_Serializer()      # It return another dictionary of category details we add in Category_Serializer class
-
-#     category = serializers.HyperlinkedRelatedField(
-#         queryset = Category.objects.all(),              # It return link of category details
-#         view_name = 'view_specific_category'    # url name in urls.py
-#     )
-    
-
-#     def calculate_tax(self, product):
-#         return round(product.price * Decimal(1.1), 2)

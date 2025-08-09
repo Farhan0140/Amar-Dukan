@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
 from product.models import Product, Category
 from product.serializer import Product_Serializer, Category_Serializer
@@ -9,59 +10,36 @@ from product.serializer import Product_Serializer, Category_Serializer
 from django.db.models import Count
 
 
-@api_view(['GET', 'POST'])
-def view_products( request ):
-    if request.method == 'GET':
+class View_Products( APIView ):
+    def get(self, request):
         products = Product.objects.select_related('category').all()
-        serializer = Product_Serializer( products, many=True, context={'request': request} )
+        serializer = Product_Serializer(products, many=True, context={'request': request})
         return Response(serializer.data)
     
-    if request.method == 'POST':
+    def post(self, request):
         serializer = Product_Serializer(data=request.data, context={'request': request})  # Deserializer
-
         serializer.is_valid(raise_exception=True)
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 
+class View_Specific_Product( APIView ):
 
-# @api_view()
-# def view_specific_product( request, id ):
-#     try:
-#         product = Product.objects.get(pk = id)
-#         product_dict = {
-#             'id': product.id,
-#             'name': product.name,
-#             'price': product.price,
-#             'stock': product.stock,
-#             'description': product.description,
-#         }
-#     except Product.DoesNotExist:
-#         return Response(
-#             {'message': 'Product Does Not Exist'},
-#             # status = 404,     # not recommended
-#             status = status.HTTP_404_NOT_FOUND,
-#         )
-
-#     return Response( product_dict )
-
-# ---------> Simple Version
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def view_specific_product( request, pk ):
-    product = get_object_or_404( Product, pk = pk )
-
-    if request.method == 'GET':
+    def get( self, request, pk ):
+        product = get_object_or_404( Product, pk = pk )
         serializer = Product_Serializer( product, context={'request': request} )
         return Response( serializer.data )
     
-    if request.method == 'PUT':
+    def put( self, request, pk ):
+        product = get_object_or_404( Product, pk = pk )
         serializer = Product_Serializer(product, data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response( serializer.data )
     
-    if request.method == 'DELETE':
+    def delete(self, request, pk):
+        product = get_object_or_404( Product, pk = pk )
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
