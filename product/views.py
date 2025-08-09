@@ -47,20 +47,23 @@ def view_products( request ):
 
 # ---------> Simple Version
 
-@api_view()
+@api_view(['GET', 'PUT', 'DELETE'])
 def view_specific_product( request, pk ):
     product = get_object_or_404( Product, pk = pk )
-    # product_dict = {
-    #     'id': product.id,
-    #     'name': product.name,
-    #     'price': product.price,
-    #     'stock': product.stock,
-    #     'description': product.description,
-    # }
 
-    serializer = Product_Serializer( product, context={'request': request} )
-
-    return Response( serializer.data )
+    if request.method == 'GET':
+        serializer = Product_Serializer( product, context={'request': request} )
+        return Response( serializer.data )
+    
+    if request.method == 'PUT':
+        serializer = Product_Serializer(product, data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response( serializer.data )
+    
+    if request.method == 'DELETE':
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
