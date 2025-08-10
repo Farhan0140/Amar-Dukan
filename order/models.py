@@ -5,6 +5,7 @@ from uuid import uuid4
 
 
 class Cart( models.Model ):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -30,6 +31,9 @@ class Cart_Item( models.Model ):
     )
 
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = [['cart', 'product']]
 
     def __str__( self ):
         return f"{self.quantity} X {self.product.name}"
