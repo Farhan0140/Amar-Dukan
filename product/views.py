@@ -1,24 +1,24 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import SearchFilter
 
 from product.models import Product, Category, Review
+from product.filters import Product_Filter
 from product.serializer import Product_Serializer, Category_Serializer, Review_Serializer
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.db.models import Count
 
 
 class Product_View_Set( ModelViewSet ):
+    queryset = Product.objects.all()
     serializer_class = Product_Serializer
-
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        category_id = self.request.query_params.get('category_id')
-
-        if category_id is not None:
-            queryset = Product.objects.filter(category_id=category_id)
-        
-        return queryset
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    # filterset_fields = ['category_id', 'price']
+    filterset_class = Product_Filter
+    search_fields = ['name', 'description']
 
     def destroy(self, request, *args, **kwargs):
         product = self.get_object()
