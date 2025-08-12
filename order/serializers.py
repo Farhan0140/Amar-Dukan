@@ -25,7 +25,7 @@ class CartItems_Serializer( serializers.ModelSerializer ):
 
 
 class Cart_Serializer( serializers.ModelSerializer ):
-    items = CartItems_Serializer(many=True)
+    items = CartItems_Serializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField(method_name='get_total_price')
     class Meta:
         model = Cart
