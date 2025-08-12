@@ -15,3 +15,7 @@ class User( AbstractUser ):
 
     USERNAME_FIELD = 'email'    # username er poriborte kon field ta use korte chai, eakhon theke username er poriborte email diea login korte parbo
     REQUIRED_FIELDS = []    # superuser create korar jonno username tai required field hisebe thake
+
+    def __str__(self):
+        full_name = f"{self.first_name} {self.last_name}"
+        return full_name 
