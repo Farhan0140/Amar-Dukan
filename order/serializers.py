@@ -46,6 +46,11 @@ class Add_Cart_Item_Serializer( serializers.ModelSerializer ):
             
         return self.instance
     
+class Update_CartItem_Serializer( serializers.ModelSerializer ):
+    class Meta:
+        model = Cart_Item
+        fields = ['quantity']
+    
 
     def validate_product_id(self, value):
         if not Product.objects.filter(pk=value).exists():
