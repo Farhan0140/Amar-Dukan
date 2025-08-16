@@ -2,14 +2,18 @@ from django.shortcuts import render
 
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.permissions import IsAuthenticated
 
-from order.models import Cart, Cart_Item
-from order.serializers import Cart_Serializer, CartItems_Serializer, Add_Cart_Item_Serializer, Update_CartItem_Serializer
+from order.models import Cart, Cart_Item, Order, OrderItem
+from order.serializers import Cart_Serializer, CartItems_Serializer, Add_Cart_Item_Serializer, Update_CartItem_Serializer, Order_Serializer
 
 
 class Cart_View_Set( CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet ):
-    queryset = Cart.objects.all()
     serializer_class = Cart_Serializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
 
 
 class Cart_Items_View_Set( ModelViewSet ):
@@ -23,7 +27,20 @@ class Cart_Items_View_Set( ModelViewSet ):
         return CartItems_Serializer
 
     def get_queryset(self):
-        return Cart_Item.objects.filter(cart_id=self.kwargs['cart_pk'])
+        return Cart_Item.objects.select_related('product').filter(cart_id=self.kwargs['cart_pk'])
     
     def get_serializer_context(self):
         return {'cart_pk': self.kwargs['cart_pk']}
+    
+
+# Order  ---
+
+class Order_View_Set( ModelViewSet ):
+    serializer_class = Order_Serializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.prefetch_related('items__product').all()
+        
+        return Order.objects.prefetch_related('items__product').filter(user=self.request.user)
