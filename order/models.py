@@ -66,7 +66,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Order {self.id} by {self.user.first_name} - {self.status}"
+        return f"Order by {self.user.first_name} {self.user.last_name} - {self.status}"
 
 
 class OrderItem(models.Model):
