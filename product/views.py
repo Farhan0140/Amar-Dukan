@@ -24,10 +24,7 @@ class Product_View_Set( ModelViewSet ):
     search_fields = ['name', 'description']
     ordering_fields = ['price', 'stock', 'updated_at']
     pagination_class = Default_Pagination
-    # permission_classes = [IsAdmin_Or_ReadOnly]
-    # permission_classes = [DjangoModelPermissions]
-    # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
-    permission_classes = [Custom_Django_Model_Permission]
+    permission_classes = [IsAdmin_Or_ReadOnly]
 
 
     def destroy(self, request, *args, **kwargs):
