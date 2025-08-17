@@ -65,6 +65,7 @@ class Cart_Serializer( serializers.ModelSerializer ):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'total_price']
+        read_only_fields = ['user']
 
 
     def get_total_price(self, cart:Cart):
@@ -72,6 +73,16 @@ class Cart_Serializer( serializers.ModelSerializer ):
     
 
 # Order  ----
+
+class Create_Order_Serializer( serializers.Serializer ):
+    cart_id = serializers.UUIDField()
+
+    def validate_cart_id(self, cart_id):
+        if not Cart.objects.filter(pk=cart_id).exists():
+            raise serializers.ValidationError('Cart Not Found')
+        
+        if not Cart_Item.objects.filter(cart_id=cart_id).exists():
+            raise serializers.ValidationError('Cart Is Empty')
 
 class OrderItems_Serializer( serializers.ModelSerializer ):
     product = Simplified_Product_Serializer()
