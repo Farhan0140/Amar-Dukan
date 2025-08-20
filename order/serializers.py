@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 from order.models import Cart, Cart_Item, Order, OrderItem
+from order.services import Order_Service
 from product.models import Product
 
 
@@ -65,6 +66,7 @@ class Cart_Serializer( serializers.ModelSerializer ):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'total_price']
+        read_only_fields = ['user']
 
 
     def get_total_price(self, cart:Cart):
@@ -73,6 +75,34 @@ class Cart_Serializer( serializers.ModelSerializer ):
 
 # Order  ----
 
+class Create_Order_Serializer( serializers.Serializer ):
+    cart_id = serializers.UUIDField()
+
+    def validate_cart_id(self, cart_id):
+        if not Cart.objects.filter(pk=cart_id).exists():
+            raise serializers.ValidationError('Cart Not Found')
+        
+        if not Cart_Item.objects.filter(cart_id=cart_id).exists():
+            raise serializers.ValidationError('Cart Is Empty')
+        
+        return cart_id
+        
+    def create(self, validated_data):
+        user_id = self.context['user_id']
+        cart_id = validated_data['cart_id']
+
+        try:
+            order = Order_Service.create_order(user_id=user_id, cart_id=cart_id)
+            return order
+        except ValueError as e:
+            return serializers.ValidationError(str(e))
+        
+    
+    def to_representation(self, instance):
+        return Order_Serializer(instance).data
+
+
+
 class OrderItems_Serializer( serializers.ModelSerializer ):
     product = Simplified_Product_Serializer()
 
@@ -80,6 +110,26 @@ class OrderItems_Serializer( serializers.ModelSerializer ):
         model = OrderItem
         fields = ['id', 'product', 'quantity', 'price', 'total_price']
 
+
+class Update_Order_Serializer( serializers.ModelSerializer ):
+    class Meta:
+        model = Order
+        fields = ['status']
+
+    def update(self, instance, validated_data):
+        user = self.context['user']
+        new_status = validated_data['status']
+
+        if new_status == Order.CANCELED:
+            return Order_Service.cancel_order(order=instance, user=user)
+        
+        if not user.is_staff:
+            raise serializers.ValidationError({"detail": 'You are not allowed to update this field'})
+        
+        # instance.status = new_status
+        # instance.save()
+        # return instance
+        return super().save(instance, validated_data)
 
 
 class Order_Serializer( serializers.ModelSerializer ):
