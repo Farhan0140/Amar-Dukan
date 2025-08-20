@@ -1,4 +1,6 @@
 
+from rest_framework.exceptions import PermissionDenied, ValidationError
+
 from django.db import transaction
 
 from .models import Cart, Order, OrderItem
@@ -34,3 +36,21 @@ class Order_Service:
             cart.delete()
 
             return order
+        
+
+    @staticmethod
+    def cancel_order(order, user):
+        if user.is_staff:
+            order.status == Order.CANCELED
+            order.save()
+            return order
+        
+        if order.user != user:
+            raise PermissionDenied({"detail": 'You Won\'t cancel others order'})
+        
+        if order.status == Order.DELIVERED:
+            raise ValidationError({"detail": 'Your Order has been delivered now you can\'t cancel the order'})
+        
+        order.status = Order.CANCELED
+        order.save()
+        return order
