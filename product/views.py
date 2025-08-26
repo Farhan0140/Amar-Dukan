@@ -5,9 +5,9 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
 
-from product.models import Product, Category, Review
+from product.models import Product, Category, Review, Product_Images
 from product.filters import Product_Filter
-from product.serializer import Product_Serializer, Category_Serializer, Review_Serializer
+from product.serializer import Product_Serializer, Category_Serializer, Review_Serializer, Product_Image_Serializer
 from product.paginations import Default_Pagination
 
 from api.permissions import IsAdmin_Or_ReadOnly, Custom_Django_Model_Permission
@@ -16,6 +16,17 @@ from .permissions import Is_ReviewAuthor_Or_ReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
 from django.db.models import Count
+
+
+class Product_Images_ViewSet( ModelViewSet ):
+    serializer_class = Product_Image_Serializer
+
+
+    def get_queryset(self):
+        return Product_Images.objects.filter(product_id=self.kwargs['product_pk'])
+    
+    def perform_create(self, serializer):
+        serializer.save(product_id=self.kwargs['product_pk'])
 
 
 class Product_View_Set( ModelViewSet ):
@@ -29,13 +40,13 @@ class Product_View_Set( ModelViewSet ):
     permission_classes = [IsAdmin_Or_ReadOnly]
 
 
-    def destroy(self, request, *args, **kwargs):
-        product = self.get_object()
-        if product.stock > 0:
-            return Response({'message': 'You can\'t delete an available product'})  
+    # def destroy(self, request, *args, **kwargs):
+    #     product = self.get_object()
+    #     if product.stock > 0:
+    #         return Response({'message': 'You can\'t delete an available product'})  
         
-        self.perform_destroy(product)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    #     self.perform_destroy(product)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Category_View_Set( ModelViewSet ):
