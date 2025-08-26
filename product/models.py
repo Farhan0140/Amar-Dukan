@@ -3,6 +3,10 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 
 
+from product.validators import Validate_File_Size
+
+
+
 class Category( models.Model ):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -38,7 +42,7 @@ class Product_Images( models.Model ):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(upload_to="products/images/", default="products/images/default_product_image.jpg")
+    image = models.ImageField(upload_to="products/images/", default="products/images/default_product_image.jpg", validators=[Validate_File_Size])
     # file = models.FileField(upload_to="product/files/", validators=[FileExtensionValidator(['pdf'])])
 
 

@@ -20,6 +20,7 @@ from django.db.models import Count
 
 class Product_Images_ViewSet( ModelViewSet ):
     serializer_class = Product_Image_Serializer
+    permission_classes = [IsAdmin_Or_ReadOnly]
 
 
     def get_queryset(self):
