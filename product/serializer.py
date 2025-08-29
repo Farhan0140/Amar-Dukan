@@ -12,7 +12,7 @@ class Category_Serializer( serializers.ModelSerializer ):
 
     product_count = serializers.IntegerField(
         read_only=True, 
-        help_text="Return the number product in this category"
+        help_text="Return the number products in this category"
     )
 
 
