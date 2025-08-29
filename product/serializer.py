@@ -16,10 +16,17 @@ class Category_Serializer( serializers.ModelSerializer ):
     )
 
 
+class Product_Image_Serializer( serializers.ModelSerializer ):
+    class Meta:
+        model = Product_Images
+        fields = ['id', 'image']
+
+
 class Product_Serializer( serializers.ModelSerializer ):
+    images = Product_Image_Serializer(read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'stock', 'price', 'product_with_tax', 'category']
+        fields = ['id', 'name', 'description', 'stock', 'price', 'product_with_tax', 'category', 'images']
 
     product_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
 
@@ -32,12 +39,7 @@ class Product_Serializer( serializers.ModelSerializer ):
             return serializers.ValidationError('Price can\'t be negative')
         
         return price
-    
 
-class Product_Image_Serializer( serializers.ModelSerializer ):
-    class Meta:
-        model = Product_Images
-        fields = ['id', 'image']
 
 
 class Simple_User_Serializer( serializers.ModelSerializer ):
