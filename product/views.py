@@ -26,10 +26,10 @@ class Product_Images_ViewSet( ModelViewSet ):
 
 
     def get_queryset(self):
-        return Product_Images.objects.filter(product_id=self.kwargs['product_pk'])
+        return Product_Images.objects.filter(product_id=self.kwargs.get('product_pk'))
     
     def perform_create(self, serializer):
-        serializer.save(product_id=self.kwargs['product_pk'])
+        serializer.save(product_id=self.kwargs.get('product_pk'))
 
 
 class Product_View_Set( ModelViewSet ):
@@ -94,7 +94,7 @@ class Review_View_Set( ModelViewSet ):
     permission_classes = [Is_ReviewAuthor_Or_ReadOnly]
 
     def get_queryset(self):
-        return Review.objects.filter(product_id = self.kwargs['product_pk'])
+        return Review.objects.filter(product_id = self.kwargs.get('product_pk'))
     
 
     def perform_create(self, serializer):
@@ -102,4 +102,4 @@ class Review_View_Set( ModelViewSet ):
         
 
     def get_serializer_context(self):
-        return {'product_id': self.kwargs['product_pk']}
+        return {'product_id': self.kwargs.get('product_pk')}
