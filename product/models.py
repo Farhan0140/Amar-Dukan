@@ -1,6 +1,10 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
+
+
+from product.validators import Validate_File_Size
+
 
 
 class Category( models.Model ):
@@ -16,7 +20,6 @@ class Product( models.Model ):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
-    image = models.ImageField(upload_to="products/images/", blank=True, null=True, default="products/images/default_product_image.jpg")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -31,6 +34,16 @@ class Product( models.Model ):
 
     def __str__( self ):
         return self.name
+    
+
+class Product_Images( models.Model ):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='images',
+    )
+    image = models.ImageField(upload_to="products/images/", default="products/images/default_product_image.jpg", validators=[Validate_File_Size])
+    # file = models.FileField(upload_to="product/files/", validators=[FileExtensionValidator(['pdf'])])
 
 
 class Review( models.Model ):
