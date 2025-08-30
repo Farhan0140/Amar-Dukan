@@ -82,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Amar_Dukan.wsgi.application'
+WSGI_APPLICATION = 'Amar_Dukan.wsgi.app'
 
 
 # Database
