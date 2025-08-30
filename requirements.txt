@@ -2,9 +2,11 @@ asgiref==3.9.1
 certifi==2025.8.3
 cffi==1.17.1
 charset-normalizer==3.4.3
+cloudinary==1.44.1
 cryptography==45.0.6
 defusedxml==0.7.1
 Django==5.2.4
+django-cloudinary-storage==0.3.0
 django-debug-toolbar==6.0.0
 django-filter==25.1
 djangorestframework==3.16.0
@@ -26,6 +28,7 @@ pytz==2025.2
 PyYAML==6.0.2
 requests==2.32.4
 requests-oauthlib==2.0.0
+six==1.17.0
 social-auth-app-django==5.5.1
 social-auth-core==4.7.0
 sqlparse==0.5.3
