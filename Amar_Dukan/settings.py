@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "corsheaders",
     'drf_yasg',
     'rest_framework',
     'djoser',
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -83,6 +85,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Amar_Dukan.wsgi.app'
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173'
+]
 
 
 # Database
