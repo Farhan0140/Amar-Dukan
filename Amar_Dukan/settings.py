@@ -189,7 +189,7 @@ SIMPLE_JWT = {
 
 
 DJOSER = {
-    'EMAIL_FRONTEND_PROTOCOL': config('EMAIL_FRONTEND_DOMAIN'),
+    'EMAIL_FRONTEND_PROTOCOL': config('EMAIL_FRONTEND_PROTOCOL'),
     'EMAIL_FRONTEND_DOMAIN': config('EMAIL_FRONTEND_DOMAIN'),
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/{uid}/{token}',
