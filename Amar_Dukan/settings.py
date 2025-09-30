@@ -182,8 +182,6 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'EMAIL_FRONTEND_PROTOCOL': config('EMAIL_FRONTEND_DOMAIN'),
-   'EMAIL_FRONTEND_DOMAIN': config('EMAIL_FRONTEND_DOMAIN'),
    'AUTH_HEADER_TYPES': ('JWT',),  # JWT Token Prefix
    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
@@ -191,6 +189,8 @@ SIMPLE_JWT = {
 
 
 DJOSER = {
+    'EMAIL_FRONTEND_PROTOCOL': config('EMAIL_FRONTEND_DOMAIN'),
+    'EMAIL_FRONTEND_DOMAIN': config('EMAIL_FRONTEND_DOMAIN'),
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
