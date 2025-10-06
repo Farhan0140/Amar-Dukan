@@ -5,6 +5,7 @@ from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyM
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from order.models import Cart, Cart_Item, Order, OrderItem
 from order.serializers import Cart_Serializer, CartItems_Serializer, Add_Cart_Item_Serializer, Update_CartItem_Serializer, Order_Serializer, Create_Order_Serializer, Update_Order_Serializer, Empty_Serializer
@@ -22,6 +23,16 @@ class Cart_View_Set( CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, Ge
             return Cart.objects.none()
         
         return Cart.objects.filter(user=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+
+        existing_cart = Cart.objects.filter(user=request.user).first()
+
+        if existing_cart:
+            serializer = self.get_serializer( existing_cart )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return super().create(request, *args, **kwargs)
 
 
 class Cart_Items_View_Set( ModelViewSet ):
